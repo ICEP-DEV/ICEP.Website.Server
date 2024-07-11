@@ -1,41 +1,23 @@
-
-const mysql = require('mysql');
+require('dotenv').config();
 const express = require('express');
-const app = express();
-var cors = require('cors')
-const mysqlConn= require('./conn/conn');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+require('./config/config')
 
-app.use(bodyParser.json());
-app.use(cors())
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json()); 
 
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST,GET,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Accept');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-  });
-// api routes
+app.use(bodyParser.urlencoded({ extended: false }));
 
- app.use('/', require('./routes/register'));
- app.use('/', require('./routes/student_profile'));
- app.use('/', require('./routes/update_profile'));
- app.use('/', require('./routes/admin_reg'));
- app.use('/', require('./routes/application'));
+app.use('/api', require('./routes/student'));
 
- app.use('/', require('./routes/update_admin_profile'));
- app.use('/', require('./routes/upload_cv'));
- app.use('/', require('./routes/upload_id'));
- app.use('/', require('./routes/appl_login'));
- app.use('/', require('./routes/admin_login'));
- app.use('/', require('./routes/upload_academic'));
- app.use('/', require('./routes/view_profiles'));
- app.use('/', require('./routes/view_applications'));
- app.use('/', require('./routes/detele_profile'));
+app.use('/', (req, res) =>{
+    res.send('Endpoint')
+});
 
-// start server
-const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 5000;
-const server = app.listen(port, function () {
-    console.log('Server listening on port ' + port);
+
+app.listen(process.env.PORT, () => {
+    console.log('Server started at port ' + process.env.PORT)
 })

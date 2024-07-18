@@ -21,8 +21,7 @@ const upload = multer({ storage });
 
 
 router.post('/uploadFile',upload.single('file'), (req, res)=>{
-    console.log(req.file);
-    var filepath = req.file.path
+    var filepath = req.file.path;
     const filestream = fs.createReadStream(filepath);
     filestream.on('error', (err) => {
         console.log('error', err);
@@ -32,7 +31,7 @@ router.post('/uploadFile',upload.single('file'), (req, res)=>{
         Key: `CVs/${Date.now().toString()}`+req.file.originalname,
         Body: filestream
     }
-
+    
     s3.upload(params, (err, data) => {
         if (err) { console.log(err); }
         if (data) {
@@ -46,12 +45,42 @@ router.post('/uploadFile',upload.single('file'), (req, res)=>{
     
 })
 
+router.get('/getCampuses', (req, res) =>{
+    connection.query('select * from campus where open = true', (err, results)=>{
+        if(err){
+            console.log(err);
+            return
+        }
+        if(results.length> 0){
+            res.send({success: true, results})
+        }
+        else{
+            res.send({success: false, message:'This application is not open for any campuses'})
+        }
+    })
+})
+
+router.get('/getCourse', (req, res) =>{
+    connection.query('select * from course where open = true', (err, results)=>{
+        if(err){
+            console.log(err);
+            return
+        }
+        if(results.length> 0){
+            res.send({success: true, results})
+        }
+        else{
+            res.send({success: false, message:'This application is not open for any courses'})
+        }
+    })
+})
+
 router.post('/student_application', (req, res) => {
-    /*
+    
     connection.query(`select * from student where student_id = '${req.body.student_id}'`, (error, result) => {
         if (error) throw error;
         if (result.length > 0) {
-            res.send({ success: false, message: "exist" });
+            res.send({ success: false, message: "this student number already exist", result });
         }
         else {
             var sqlInsert = `INSERT INTO student (student_id, firstname, lastname, email, idno, dob, phoneNo, gender, outstanding, houseNo, streetName, town, code, cv_file, 
@@ -74,7 +103,7 @@ router.post('/student_application', (req, res) => {
         }
 
     })
-*/
+
 })
 
 module.exports = router;

@@ -84,11 +84,11 @@ router.post('/student_application', (req, res) => {
         }
         else {
             var sqlInsert = `INSERT INTO student (student_id, firstname, lastname, email, idno, dob, phoneNo, gender, outstanding, houseNo, streetName, town, code, cv_file, 
-                                recommendation_file, course_id, campus_id)
-                                values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                recommendation_file, course_id, campus_id, status)
+                                values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
             var bodyParams = [req.body.student_id, req.body.firstname, req.body.lastname, req.body.email, req.body.idno, req.body.dob, req.body.phoneNo, req.body.gender,
-            req.body.outstanding, req.body.houseNo, req.body.streetName, req.body.town, req.body.code, req.body.cv_file, req.body.recommendation_file, req.body.course_id, req.body.campus_id];
+            req.body.outstanding, req.body.houseNo, req.body.streetName, req.body.town, req.body.code, req.body.cv_file, req.body.recommendation_file, req.body.course_id, req.body.campus_id, "Pending"];
 
             connection.query(sqlInsert, bodyParams, (err, results) => {
                 if (err) throw err;
@@ -101,9 +101,16 @@ router.post('/student_application', (req, res) => {
                 }
             })
         }
-
     })
+})
 
+router.get('/check_status/:student_no', (req, res)=>{
+
+    connection.query(`select * from student where student_id = '${req.params.student_no}'`, (err, results)=>{
+        if(err){console.log(err); return}
+        if(results.length>0){res.send({success:true, results})}
+        else{res.send({success:false, message:'No data has found'})}
+    })
 })
 
 module.exports = router;

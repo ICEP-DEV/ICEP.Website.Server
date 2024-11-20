@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 20, 2024 at 11:34 AM
+-- Generation Time: Nov 20, 2024 at 11:00 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,7 +50,7 @@ INSERT INTO `campus` (`campus_id`, `campus_name`, `open`) VALUES
 
 CREATE TABLE `course` (
   `course_id` varchar(10) NOT NULL,
-  `course_name` varchar(20) DEFAULT NULL,
+  `course_name` varchar(100) DEFAULT NULL,
   `open` bit(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -60,7 +60,7 @@ CREATE TABLE `course` (
 
 INSERT INTO `course` (`course_id`, `course_name`, `open`) VALUES
 ('DPIF20', 'INFORMATICS', b'1'),
-('DPIT20', 'INFORMATION TECHNOLO', b'1'),
+('DPIT20', 'INFORMATION TECHNOLOGY', b'1'),
 ('DPRS20', 'COMPUTER SCIENCE', b'1');
 
 -- --------------------------------------------------------
@@ -70,7 +70,8 @@ INSERT INTO `course` (`course_id`, `course_name`, `open`) VALUES
 --
 
 CREATE TABLE `student` (
-  `student_id` varchar(10) NOT NULL,
+  `id` int(11) NOT NULL,
+  `student_id` varchar(15) NOT NULL,
   `firstname` varchar(50) DEFAULT NULL,
   `lastname` varchar(50) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
@@ -94,10 +95,10 @@ CREATE TABLE `student` (
 -- Dumping data for table `student`
 --
 
-INSERT INTO `student` (`student_id`, `firstname`, `lastname`, `email`, `idno`, `dob`, `phoneNo`, `gender`, `outstanding`, `houseNo`, `streetName`, `town`, `code`, `cv_file`, `recommendation_file`, `course_id`, `campus_id`, `status`) VALUES
-('12121', 'firstname', 'lastname', 'email@email.com', '195632587', '2000-01-01', '125545454', 'male', b'1', '2145', 'streetName', 'town', '0123', 'jkdjbkdbjdjkd.pdf', 'jdhduid.pdf', 'DPIF20', 'tut-ema', 'Pending'),
-('1212121', 'firstname', 'lastname', 'email@email.com', '195632587', '2000-01-01', '125545454', 'male', b'1', '2145', 'streetName', 'town', '0123', 'jkdjbkdbjdjkd.pdf', 'jdhduid.pdf', 'DPIF20', 'tut-ema', 'Pending'),
-('213654789', 'Joel', 'kekana', 'kekana@gmail.com', '1021025055236', '0000-00-00', '0123456789', 'Male', b'0', '3698', 'tswelopele', 'Sosha', '0124', 'https://s3.eu-west-1.amazonaws.com/www.icep.co.za/CVs/1721216910374Prospectus_2024.pdf', '', 'DPIF20', 'tut-ema', 'Pending');
+INSERT INTO `student` (`id`, `student_id`, `firstname`, `lastname`, `email`, `idno`, `dob`, `phoneNo`, `gender`, `outstanding`, `houseNo`, `streetName`, `town`, `code`, `cv_file`, `recommendation_file`, `course_id`, `campus_id`, `status`) VALUES
+(12121, '', 'firstname', 'lastname', 'email@email.com', '195632587', '2000-01-01', '125545454', 'male', b'1', '2145', 'streetName', 'town', '0123', 'jkdjbkdbjdjkd.pdf', 'jdhduid.pdf', 'DPIF20', 'tut-ema', 'Pending'),
+(1212121, '', 'firstname', 'lastname', 'email@email.com', '195632587', '2000-01-01', '125545454', 'male', b'1', '2145', 'streetName', 'town', '0123', 'jkdjbkdbjdjkd.pdf', 'jdhduid.pdf', 'DPIF20', 'tut-ema', 'Pending'),
+(213654789, '', 'Joel', 'kekana', 'kekana@gmail.com', '1021025055236', '0000-00-00', '0123456789', 'Male', b'0', '3698', 'tswelopele', 'Sosha', '0124', 'https://s3.eu-west-1.amazonaws.com/www.icep.co.za/CVs/1721216910374Prospectus_2024.pdf', '', 'DPIF20', 'tut-ema', 'Pending');
 
 --
 -- Indexes for dumped tables
@@ -119,9 +120,19 @@ ALTER TABLE `course`
 -- Indexes for table `student`
 --
 ALTER TABLE `student`
-  ADD PRIMARY KEY (`student_id`),
+  ADD PRIMARY KEY (`id`),
   ADD KEY `course_id` (`course_id`),
   ADD KEY `campus_id` (`campus_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `student`
+--
+ALTER TABLE `student`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=213654790;
 
 --
 -- Constraints for dumped tables

@@ -4,7 +4,6 @@ const fs = require('fs');
 const AWS = require('aws-sdk')
 const multer = require('multer');
 const connection = require("../config/config");
-const { log } = require('console');
 const router = express.Router();
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -21,6 +20,8 @@ const upload = multer({ storage });
 
 
 router.post('/uploadFile',upload.single('file'), (req, res)=>{
+    console.log(req.file);
+    
     var filepath = req.file.path;
     const filestream = fs.createReadStream(filepath);
     filestream.on('error', (err) => {

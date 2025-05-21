@@ -78,10 +78,13 @@ router.get('/getCourse', (req, res) =>{
 
 router.post('/student_application', (req, res) => {
     
-    connection.query(`select * from student where student_id = '${req.body.student_id}'`, (error, result) => {
+    connection.query(`select * from post p, student s 
+                        where p.post_id = s.post_id
+                        and student_id = '${req.body.student_id}'
+                        and post_ref ='${req.body.post_ref}'`, (error, result) => {
         if (error) throw error;
         if (result.length > 0) {
-            res.send({ success: false, message: "this student number already exist", result });
+            res.send({ success: false, message: "this student number already exist in this application", result });
         }
         else {
             var sqlInsert = `INSERT INTO student (student_id, firstname, lastname, email, idno, dob, phoneNo, gender, outstanding, houseNo, streetName, town, code, cv_file, 

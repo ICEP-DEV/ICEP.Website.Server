@@ -19,9 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-router.post('/uploadFile',upload.single('file'), (req, res)=>{
-    console.log(req.file);
-    
+router.post('/uploadFile',upload.single('file'), (req, res)=>{    
     var filepath = req.file.path;
     const filestream = fs.createReadStream(filepath);
     filestream.on('error', (err) => {
@@ -77,11 +75,15 @@ router.get('/getCourse', (req, res) =>{
 })
 
 router.post('/student_application', (req, res) => {
-    
-    connection.query(`select * from post p, student s 
+    console.log(req.body);
+    /*`select * from post p, student s 
                         where p.post_id = s.post_id
-                        and student_id = '${req.body.student_id}'
-                        and post_ref ='${req.body.post_ref}'`, (error, result) => {
+                        and student_id = '${req.body.student_id}'`
+                        // and post_ref ='${req.body.post_ref}' */
+    connection.query(`select * from  student
+                        where student_id = '${req.body.student_id}'`
+                        // and post_ref ='${req.body.post_ref}'
+                        , (error, result) => {
         if (error) throw error;
         if (result.length > 0) {
             res.send({ success: false, message: "this student number already exist in this application", result });
@@ -92,7 +94,7 @@ router.post('/student_application', (req, res) => {
                                 values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
             var bodyParams = [req.body.student_id, req.body.firstname, req.body.lastname, req.body.email, req.body.idno, req.body.dob, req.body.phoneNo, req.body.gender,
-            req.body.outstanding, req.body.houseNo, req.body.streetName, req.body.town, req.body.code, req.body.cv_file, req.body.recommendation_file, req.body.course_id, req.body.campus_id, "Pending"];
+            req.body.outstanding, req.body.houseNo, req.body.streetName, req.body.town, req.body.code, req.body.cv_file, req.body.recommendation_file, req.body.course, req.body.campus, "Pending"];
 
             connection.query(sqlInsert, bodyParams, (err, results) => {
                 if (err) throw err;
@@ -106,6 +108,7 @@ router.post('/student_application', (req, res) => {
             })
         }
     })
+    
 })
 
 router.get('/check_status/:student_no', (req, res)=>{

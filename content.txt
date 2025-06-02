@@ -1,0 +1,3 @@
+setup ec2 node js
+github: https://github.com/saasscaleup/nodejs-ssl-server/blob/master/README.md
+video : https://www.youtube.com/watch?v=yhiuV6cqkNs&t=141s

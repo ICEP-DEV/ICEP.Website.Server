@@ -38,7 +38,7 @@ router.post('/uploadFile',upload.single('file'), (req, res)=>{
             res.send({ success: true, message: "Uploaded successfully", link });
         }
         else{
-            res.send({ success: false, message: "Unable to upload file" });
+            res.send({ success: false, message: "Unable to upload file", err });
         }
     })
     

@@ -26,7 +26,7 @@ router.post('/uploadFile', upload.single('file'), (req, res) => {
         console.log('error', err);
     })
     const params = {
-        Bucket: 'www.icep.co.za',
+        Bucket: 'icep.co.za',
         Key: `CVs/${Date.now().toString()}` + req.file.originalname,
         Body: filestream
     }

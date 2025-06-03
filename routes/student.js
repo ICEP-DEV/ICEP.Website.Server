@@ -8,7 +8,7 @@ const router = express.Router();
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRETE_ACCESS_KEY,
-    region: process.env.REGION
+    region: "eu-west-1"
 });
 
 const storage = multer.diskStorage({

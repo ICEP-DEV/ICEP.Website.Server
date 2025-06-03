@@ -20,37 +20,28 @@ const upload = multer({ storage });
 
 
 router.post('/uploadFile', upload.single('file'), (req, res) => {
-    var filepath = req.file.path;
-    const filestream = fs.createReadStream(filepath);
-    filestream.on('error', (err) => {
-        console.log('error', err);
-    })
-    const params = {
-        Bucket: 'icep.co.za',
-        Key: `CVs/${Date.now().toString()}` + req.file.originalname,
-        Body: filestream
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).json({ success: false, message: "No file uploaded" });
+  }
+
+  const params = {
+    Bucket: 'web.co.za',
+    Key: `CVs/${Date.now()}-${file.originalname}`,
+    Body: file.buffer, // ← use the in-memory buffer
+    ContentType: file.mimetype,
+  };
+
+  s3.upload(params, (err, data) => {
+    if (err) {
+      console.error('S3 Upload Error:', err);
+      return res.status(500).json({ success: false, message: "Upload failed", error: err });
     }
+    res.json({ success: true, message: "Uploaded successfully", link: data.Location });
+  });
+});
 
-    s3.upload(params, (err, data) => {
-        if (err) { console.log(err); }
-        try {
-            if (data) {
-                var link = data.Location
-                res.send({ success: true, message: "Uploaded successfully", link });
-            }
-        } catch (error) {
-            res.json({ success: false, message: "Unable to upload file...",error });
-        }
-        // if (data) {
-        //     var link = data.Location
-        //     res.send({ success: true, message: "Uploaded successfully", link });
-        // }
-        // else{
-        //     res.send({ success: false, message: "Unable to upload file" });
-        // }
-    })
-
-})
 
 router.get('/getCampuses', (req, res) => {
     connection.query('select * from campus where open = true', (err, results) => {

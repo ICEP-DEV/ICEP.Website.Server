@@ -8,7 +8,7 @@ const router = express.Router();
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRETE_ACCESS_KEY,
-    region: "eu-west-1"
+    region: process.env.REGION || "eu-west-1"
 });
 
 const storage = multer.diskStorage({
@@ -39,7 +39,7 @@ router.post('/uploadFile', upload.single('file'), (req, res) => {
                 res.send({ success: true, message: "Uploaded successfully", link });
             }
         } catch (error) {
-            res.json({ success: false, message: "Unable to upload file...",error });
+            res.json({ success: false, message: "Unable to upload file...", error });
         }
         // if (data) {
         //     var link = data.Location

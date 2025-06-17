@@ -195,6 +195,23 @@ router.get('/check_statuses', (req, res) => {
     })
 })
 
+router.put('/update_student_status/:stud_id', (req, res) => {
+    var sql = `update student
+                set status =?
+                where id =?`;
+    var studentReq = [req.body.status, req.params.stud_id];
+    connection.query(sql, studentReq, (err, results) => {
+        if (err) { console.log(err); return }
+        if (results.affectedRows != 0) {
+
+            res.send({
+                success: true, message:'Applicant marked '
+            })
+        }
+        else { res.send({ success: false, message: 'Unable to update status to ' }) }
+    })
+})
+
 // get the statestics of specific student 
 router.get('/check_status/:student_no', (req, res) => {
 

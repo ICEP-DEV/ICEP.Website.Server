@@ -135,11 +135,11 @@ router.post('/student_application', (req, res) => {
             }
             else {
                 var sqlInsert = `INSERT INTO student (student_id, firstname, lastname, email, idno, dob, phoneNo, gender, outstanding, houseNo, streetName, town, code, cv_file, 
-                                recommendation_file, course_id, campus_id, status, post_id)
+                                recommendation_file, course_id, campus_id, status)
                                 values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
                 var bodyParams = [req.body.student_id, req.body.firstname, req.body.lastname, req.body.email, req.body.idno, req.body.dob, req.body.phoneNo, req.body.gender,
-                req.body.outstanding, req.body.houseNo, req.body.streetName, req.body.town, req.body.code, req.body.cv_file, req.body.recommendation_file, req.body.course, req.body.campus, "Pending", 6];
+                req.body.outstanding, req.body.houseNo, req.body.streetName, req.body.town, req.body.code, req.body.cv_file, req.body.recommendation_file, req.body.course, req.body.campus, "Pending"];
 
                 connection.query(sqlInsert, bodyParams, (err, results) => {
                     if (err) throw err;
@@ -161,8 +161,7 @@ router.get('/getAllStudents', (req, res) => {
     connection.query(`SELECT id, student_id, firstname, lastname, email, idno, dob, phoneNo, gender, IF(outstanding = 1, 'Yes', 'No') AS outstanding, houseNo, streetName, town, code, cv_file, recommendation_file, s.course_id, s.campus_id, status, post_id, DATE_FORMAT(date_created,"%d/%b/%Y") as date_created, course_name, campus_name
         FROM student s, campus camp, course cour
         WHERE s.course_id = cour.course_id
-        AND s.campus_id = camp.campus_id
-        ORDER BY s.date_created;`, (err, results) => {
+        AND s.campus_id = camp.campus_id;`, (err, results) => {
         if (err) {
             console.log(err);
             return
@@ -206,7 +205,7 @@ router.put('/update_student_status/:stud_id', (req, res) => {
         if (results.affectedRows != 0) {
 
             res.send({
-                success: true, message: 'Applicant marked '
+                success: true, message:'Applicant marked '
             })
         }
         else { res.send({ success: false, message: 'Unable to update status to ' }) }
@@ -258,6 +257,8 @@ router.get('/posters', (req, res) => {
 // Create a poster
 router.post('/create_posters', (req, res) => {
     //console.log(req.body);
+    var date = new Date('2025-06-18 00:30')
+    console.log(date);
     var open_date = req.body.open_date + " " + req.body.open_time;
     var close_date = req.body.closing_date + " " + req.body.closing_time;
     var posterData = [req.body.postname, open_date, close_date, req.body.description, uuidv4()]
@@ -265,53 +266,24 @@ router.post('/create_posters', (req, res) => {
     connection.query('update course set open = false');
     connection.query('update campus set open = false');
 
-
-    connection.query(`INSERT INTO post (postname, open_date, closing_date, description, post_ref)
-             VALUES(?,?,?,?,?)`, posterData, (err, results) => {
+    connection.query(`INSERT INTO post (postname, open_date, closing_date, post_ref)
+            VALUES(?,?,?,?)`, posterData, (err, results) => {
         if (err) { console.log(err); return }
         if (results.affectedRows != 0) {
 
             res.send({
-                success: true, message: 'Application was sent successfully'
+                success: true, results
             })
         }
-        else { res.send({ success: false, message: 'Unable to upload information, plesae try again' }) }
+        else { res.send({ success: false, message: 'No data has found' }) }
     })
-
-    for (var k = 0; k < req.body.courses.length; k++) {
-
-        connection.query(`update course set open = true where course_id = '${req.body.courses[k]}'`, (err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-        });
+    for (var k = 0; k < req.body.courses; k++) {
+        connection.query(`update course set open = true where course_id = '${req.body.courses[k]}'`);
     }
-    for (var k = 0; k < req.body.campuses.length; k++) {
-        connection.query(`update campus set open = true where campus_id = '${req.body.campuses[k]}'`, (err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-        });;
+    for (var k = 0; k < req.body.campuses; k++) {
+        connection.query(`update campus set open = true where campus_id = '${req.body.courses[k]}'`);
     }
 
 })
 
-// remove post
-router.delete('/delete_posters/:post_id', (req, res) => {
-    console.log(req.params.post_id);
-
-    var sql = 'delete from post where post_id = ?';
-    connection.query(sql, req.params.post_id, (err, results) => {
-        if (err) { console.log(err); return }
-        if (results.affectedRows != 0) {
-            res.send({ success: true, message: 'Post deleted successfully' })
-        }
-        else {
-            res.send({ success: false, message: 'Unable to delete post' })
-        }
-
-    })
-})
 module.exports = router;

@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/api', require('./routes/student'));
+app.use('/api', require('./routes/team'));
 
 app.use('/', (req, res) =>{
     res.send('Endpoint')

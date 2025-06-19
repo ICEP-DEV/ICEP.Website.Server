@@ -161,7 +161,8 @@ router.get('/getAllStudents', (req, res) => {
     connection.query(`SELECT id, student_id, firstname, lastname, email, idno, dob, phoneNo, gender, IF(outstanding = 1, 'Yes', 'No') AS outstanding, houseNo, streetName, town, code, cv_file, recommendation_file, s.course_id, s.campus_id, status, post_id, DATE_FORMAT(date_created,"%d/%b/%Y") as date_created, course_name, campus_name
         FROM student s, campus camp, course cour
         WHERE s.course_id = cour.course_id
-        AND s.campus_id = camp.campus_id;`, (err, results) => {
+        AND s.campus_id = camp.campus_id
+        ORDER BY s.date_created;`, (err, results) => {
         if (err) {
             console.log(err);
             return
@@ -205,7 +206,7 @@ router.put('/update_student_status/:stud_id', (req, res) => {
         if (results.affectedRows != 0) {
 
             res.send({
-                success: true, message:'Applicant marked '
+                success: true, message: 'Applicant marked '
             })
         }
         else { res.send({ success: false, message: 'Unable to update status to ' }) }
@@ -300,15 +301,15 @@ router.post('/create_posters', (req, res) => {
 // remove post
 router.delete('/delete_posters/:post_id', (req, res) => {
     console.log(req.params.post_id);
-    
+
     var sql = 'delete from post where post_id = ?';
     connection.query(sql, req.params.post_id, (err, results) => {
         if (err) { console.log(err); return }
         if (results.affectedRows != 0) {
-            res.send({success:true, message:'Post deleted successfully'})
-         }
-        else { 
-            res.send({success:false, message:'Unable to delete post'})
+            res.send({ success: true, message: 'Post deleted successfully' })
+        }
+        else {
+            res.send({ success: false, message: 'Unable to delete post' })
         }
 
     })

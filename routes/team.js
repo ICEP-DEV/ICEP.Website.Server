@@ -58,9 +58,9 @@ router.post('/login', (req, res) => {
 // get all members
 router.get('/get_team', (req, res) => {
     var sql = `select team_id, name, surname, email, password, role, image, status, campus_name, campus, course_name, course 
-                from team  t, course cor, campus cam
-                where t.campus = cam.campus_id
-                and t.course = cor.course_id`;
+                from team  t
+                LEFT JOIN campus cam ON t.campus = cam.campus_id
+                LEFT JOIN course cor ON t.course = cor.course_id`;
 
     connection.query(sql, (err, results) => {
         if (err) { console.log(err); return }

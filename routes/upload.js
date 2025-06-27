@@ -25,38 +25,40 @@ router.post('/upload', upload.single('file'), (req, res) => {
     var filepath = req.file.path;
     // var folder = req.body.foder
     console.log(req.body.folder);
-    console.log(req.file);
+    console.log(req.file.size);
 
-    const filestream = fs.createReadStream(filepath);
-    filestream.on('error', (err) => {
-        console.log('error', err);
-    })
-    const params = {
-        Bucket: 'www.icep.co.za',
-        Key: req.body.folder + `/${Date.now().toString()}` + req.file.originalname,
-        Body: filestream
+    if (req.file.size > 3145728) {
+        res.json({ success: false, message: "Size file is more than 3MB" });
+    }
+    else {
+        const filestream = fs.createReadStream(filepath);
+        filestream.on('error', (err) => {
+            console.log('error', err);
+        })
+        const params = {
+            Bucket: 'www.icep.co.za',
+            Key: req.body.folder + `/${Date.now().toString()}` + req.file.originalname,
+            Body: filestream
+        }
+
+        s3.upload(params, (err, data) => {
+            // console.log("regionssss", s3.config.region);
+
+            if (err) { console.log(err); }
+            try {
+                if (data) {
+                    var link = data.Location
+                    res.send({ success: true, message: "Uploaded successfully", link });
+                }
+            } catch (error) {
+                res.json({ success: false, message: "Unable to upload file...", error });
+            }
+        })
     }
 
-    s3.upload(params, (err, data) => {
-        // console.log("regionssss", s3.config.region);
 
-        if (err) { console.log(err); }
-        try {
-            if (data) {
-                var link = data.Location
-                res.send({ success: true, message: "Uploaded successfully", link });
-            }
-        } catch (error) {
-            res.json({ success: false, message: "Unable to upload file...", error });
-        }
-        // if (data) {
-        //     var link = data.Location
-        //     res.send({ success: true, message: "Uploaded successfully", link });
-        // }
-        // else{
-        //     res.send({ success: false, message: "Unable to upload file" });
-        // }
-    })
+
+
 
 })
 

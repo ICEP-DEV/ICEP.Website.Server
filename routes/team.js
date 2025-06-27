@@ -1,32 +1,33 @@
 require('dotenv').config();
 const express = require('express');
-const fs = require('fs');
-const AWS = require('aws-sdk')
 const { v4: uuidv4 } = require('uuid');
-const multer = require('multer');
 const connection = require("../config/config");
 const router = express.Router();
-
+const bcrypt = require('bcrypt');
 
 // add new team member
 router.post('/add_member', (req, res) => {
     var image = 'https://s3.eu-west-1.amazonaws.com/www.icep.co.za/team/tba.jpg'
-    var posterData = [uuidv4(), req.body.name, req.body.surname, req.body.email, req.body.role, 'pending', 'ICEP@2025', req.body.campus, image]
-    //res.send({date, success:true, message:'Added new application'})
+    const saltRounds = 10;
+    var date = new Date();
+    const password = 'ICEP@' + date.getFullYear()
+    bcrypt.hash(password, saltRounds, function (err, hashedPassword) {
+        if (err) throw err;
 
+        var posterData = [uuidv4(), req.body.name, req.body.surname, req.body.email, req.body.role, 'pending', hashedPassword, req.body.campus, image]
 
-    connection.query(`INSERT INTO team (team_id, name, surname, email, role, status, password, campus, image)
+        connection.query(`INSERT INTO team (team_id, name, surname, email, role, status, password, campus, image)
                  VALUES(?,?,?,?,?,?,?,?,?)`, posterData, (err, results) => {
-        if (err) { console.log(err); return }
-        if (results.affectedRows != 0) {
+            if (err) { console.log(err); return }
+            if (results.affectedRows != 0) {
 
-            res.send({
-                success: true, message: 'User added successfully'
-            })
-        }
-        else { res.send({ success: false, message: 'Unable to upload information, plesae try again' }) }
-    })
-
+                res.send({
+                    success: true, message: 'User added successfully'
+                })
+            }
+            else { res.send({ success: false, message: 'Unable to upload information, plesae try again' }) }
+        })
+    });
 })
 
 // login
